@@ -5,14 +5,9 @@ var sizeFactor = 1000;
 var centre;
 $(function(){
 	initTwo();
-	centre = {height:two.height/2, width:two.width/2};
+	centre = {height: two.height/2, width: two.width/2};
 
-	var sun = two.makeCircle(centre.width, centre.height, 0.004655 * sizeFactor);
-	var corona = two.makeCircle(centre.width, centre.height, 0.05378 * sizeFactor)
-	sun.stroke = "none";
-	sun.fill = "rgba(255, 255, 138, 1)";
-	corona.fill = "rgba(255, 255, 138, 0.46)";
-	corona.stroke = "none";
+	makeSun();
 
 	makeOrbits();
 
@@ -28,6 +23,15 @@ $(function(){
 
 function initTwo(){
 	window.two = new Two({ fullscreen: true, autostart: true }).appendTo($("#clickable").get()[0]);
+}
+
+function makeSun(){
+	var sun = two.makeCircle(centre.width, centre.height, 0.004655 * sizeFactor);
+	var corona = two.makeCircle(centre.width, centre.height, 0.05378 * sizeFactor)
+	sun.stroke = "none";
+	sun.fill = "rgba(255, 255, 138, 1)";
+	corona.fill = "rgba(255, 255, 138, 0.46)";
+	corona.stroke = "none";
 }
 
 function makeOrbits(){

@@ -16,7 +16,7 @@ export function addZUI() {
     var touches = {};
     var distance = 0;
 
-    zui.addLimits(0.06, 8);
+    zui.addLimits(0.01, 12);
 
     domElement.addEventListener('mousedown', mousedown, false);
     domElement.addEventListener('mousewheel', mousewheel, false);

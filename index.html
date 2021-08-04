@@ -8,14 +8,19 @@
 
 	<link rel='stylesheet' type='text/css' media='screen' href='main.css'>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+	<script src="./libs/tween.esm.js" type="module"></script>
 	<script src="./libs/two.module.js" type="module"></script>
 	<script src="./libs/zui.js" type="module"></script>
 	<script src='./js/main.js' type="module"></script>
 	<script src='./js/pan&Zoom.js' type="module"></script>
+	<script src='./js/animation.js' type="module"></script>
 </head>
 <body>
-	<div id="clickable" oncontextmenu="return false;">
+	<div id="clickable" oncontextmenu="return false;"></div>
+	<div id="options" style="position: relative;">
+		<div style="padding: 0.6em">
+			<div class="play"></div>
+		</div>
 	</div>
 </body>
 </html>

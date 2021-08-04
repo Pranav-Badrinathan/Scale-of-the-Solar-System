@@ -1,28 +1,25 @@
 import Two from "../libs/two.module.js";
+import { toggleAnim } from "./animation.js";
 import { addZUI } from "./pan&Zoom.js";
 
 var sizeFactor = 1000;
 var centre;
 $(function(){
+	
 	initTwo();
 	centre = {height: two.height/2, width: two.width/2};
-
 	makeSun();
-
 	makeOrbits();
-
-	$("#clickable").click(() => {
-		console.log("CLICK!!!");
-	})
-
-	$("#clickable").contextmenu(() => {
-		console.log("RIGHT CLICK!!!");
-	})
 	addZUI();
+	$(".play").click(function(){
+		$(this).toggleClass("stop");
+		toggleAnim();
+	});
 });
 
 function initTwo(){
-	window.two = new Two({ fullscreen: true, autostart: true }).appendTo($("#clickable").get()[0]);
+	var elem = $("#clickable").get()[0];
+	window.two = new Two({ fullscreen: true, autostart: true }).appendTo(elem);
 }
 
 function makeSun(){
@@ -35,8 +32,8 @@ function makeSun(){
 }
 
 function makeOrbits(){
-	//Distance from Sun to all planets and pluto in AU
-	var distInAU = [0.02673, 0.39, 0.723, 1, 1.524, 5.203, 9.539, 19.18, 30.06, 39.53];
+	//Distance from Sun to all planets + pluto in AU
+	var distInAU = [0.39, 0.723, 1, 1.524, 5.203, 9.539, 19.18, 30.06, 39.53];
 
 	distInAU.forEach(e => {
 		var orbit = two.makeCircle(centre.width, centre.height, 5 + (e * sizeFactor))

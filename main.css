@@ -1,18 +1,48 @@
+*{
+	padding: 0%;
+	margin: 0%;
+}
+
 #clickable{
 	position: absolute;
 
 	height: 100%;
 	width: 100%;
 
-	padding: 0%;
-	margin: 0%;
-
 	overflow: hidden;
 }
 
 body{
-	padding: 0%;
-	margin: 0%;
-
+	height: 100vh;
+	width: 100%;
+	margin: 0;
+	padding: 0;
 	background-color: rgb(15, 10, 46);
+}
+
+.play{
+	position: absolute;
+	width: 1.5em;
+	height: 1.5em;
+	margin: 0.25em;
+
+	box-sizing: border-box;
+  	border-style: solid;
+ 	border-width: 0.75em 0em 0.75em 1.5em;
+  	border-color: transparent transparent transparent rgb(32, 181, 226);
+  	transition: all 100ms ease-in-out;
+}
+
+.play:hover{
+	border-color: transparent transparent transparent rgb(0, 255, 221);
+
+}
+
+.play:active{
+	border-color: transparent transparent transparent rgb(51, 255, 51);
+}
+
+.stop{
+	border-width:0em 0em 0em 1.5em;
+	border-color: transparent transparent transparent rgb(32, 181, 226);
 }

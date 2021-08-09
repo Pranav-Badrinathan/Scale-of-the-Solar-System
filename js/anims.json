@@ -1,0 +1,28 @@
+{
+	"anim":[
+		{
+			"isFirst": true,
+			"pos":{
+				"x":0,
+				"y":0
+			},
+			"zoom":0,
+			"duration":0
+		},
+		{
+			"isFirst": false,
+			"pos":{
+				"x":1,
+				"y":1
+			},
+			"zoom":1,
+			"duration":1000
+		},
+		{
+
+		},
+		{
+
+		}
+	]
+}

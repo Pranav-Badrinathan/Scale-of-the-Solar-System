@@ -11,7 +11,7 @@ $(function(){
 	makeSun();
 	makeOrbits();
 	addZUI();
-	$(".play").click(function(){
+	$(".play").on("click", function(){
 		$(this).toggleClass("stop");
 		toggleAnim();
 	});

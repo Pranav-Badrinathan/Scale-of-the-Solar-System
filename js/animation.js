@@ -6,12 +6,14 @@ anims.json value key:
  */
 
 import * as panZoom from "./pan&Zoom.js";
-import TWEEN from "../libs/tween.esm.js";
+import TWEEN, { Tween } from "../libs/tween.esm.js";
 
 var pageMid;
 var prvAnim;
 var anims;
 var index;
+
+var tweens = [];
 
 /**
  * Toggles the state of the animation. Turns it `on` if it is `off`, and vice verse.
@@ -20,7 +22,17 @@ export function toggleAnim(){
 	panZoom.togglePause();
 	toggleClicks();
 
-	if(panZoom.pause === false) return;
+	if(panZoom.pause === false) {
+		tweens.forEach(t => {
+			t.stop();
+		});
+		return;
+	}
+	
+	// To reset zoom value of zui on click. Will probably have to change, but whatever lol
+	panZoom.zui.reset();
+	panZoom.zui.updateSurface();
+
 	prep();
 	update();
 }
@@ -32,15 +44,21 @@ export function toggleAnim(){
  */
 function toggleClicks(){
 	if(panZoom.pause === true) {
-		$("#clickable").on("click", Next)
-		$("#clickable").on("contextmenu", Previous)
+		$("#clickable").on("click", Next);
+		$("#clickable").on("contextmenu", Previous);
 	}
 	else {
-		$("#clickable").off("click");
-		$("#clickable").off("contextmenu");
+		$("#clickable").off("click", Next);
+		$("#clickable").off("contextmenu", Previous);
 	}
 }
 
+/**
+ * do the prep work for running the animations - 
+ * 	-	Get `anims.json`, where all animations are stored.
+ * 	-	Execute the first animation, i.e: Reset the positions and focus on the middle.
+ * 	-	Get the page middle.
+ */
 function prep(){
 	index = 0;
 	$.when(getAnimsFromJSON()).done((data) => {
@@ -70,32 +88,52 @@ function Previous(){
 	index = index - 1;
 }
 
+/**
+ * Executes the animation at a certain index in the anims array.
+ * @param {number} i The index to animate to
+ */
 function executeAnimAtIndex(i){
-	var currAnim = anims.anim[i];
+	var curAnim = anims.anim[i];
 
-	if(currAnim.isFirst){
+	if(curAnim.isFirst){
 		panZoom.zui.surfaceMatrix.identity();
 		panZoom.zui.updateSurface();
-		console.log("HERE11!")
+		panZoom.zui.zoomSet(Math.exp((getZoomFromPercent(curAnim.zoom).zoom)), pageMid.x, pageMid.y);
 	}
 	else{
-		console.log("HERE!" + i)
-		prvAnim = anims.anim[i-1]
-		console.log(currAnim.zoom + `${prvAnim.zoom}`)
-		var posTween = new TWEEN.Tween(prvAnim.pos)
-					.to(currAnim.pos, currAnim.duration)
-					.easing(TWEEN.Easing.Quadratic.InOut)
-					.onUpdate(()=>{
-						console.log(prvAnim.pos);
-					}).start();
+		prvAnim = prvAnim == null?anims.anim[i-1]:prvAnim;
 		
-		var zoomTween = new TWEEN.Tween({zoom:prvAnim.zoom})
-					.to({zoom:currAnim.zoom}, currAnim.duration)
+		var prvZoom = getZoomFromPercent(prvAnim.zoom);
+		var curZoom = getZoomFromPercent(curAnim.zoom);
+		var prvPos = {
+						x: pageMid.x + prvAnim.pos.x,
+						y: pageMid.y + prvAnim.pos.y
+					};
+		
+		var curPos = {
+						x: pageMid.x + curAnim.pos.x,
+						y: pageMid.y + curAnim.pos.y
+					};
+
+		tweens.push(new TWEEN.Tween(prvPos)
+					.to(curPos, curAnim.duration)
+					.easing(TWEEN.Easing.Quadratic.InOut)
+					.start());
+
+		tweens.push(new TWEEN.Tween(prvZoom)
+					.to(curZoom, curAnim.duration)
 					.easing(TWEEN.Easing.Quadratic.InOut)
 					.onUpdate(()=>{
-						console.log(prvAnim.zoom);
-					}).start();
+						console.log(prvPos.x-pageMid.x);
+						panZoom.zui.zoomSet(prvZoom.zoom, prvPos.x, prvPos.y);
+					}).start());
 	}
+
+	prvAnim = curAnim;
+}
+
+function getZoomFromPercent(percent) {
+	return {zoom: (percent * (panZoom.minMax.max - panZoom.minMax.min) / 100 + panZoom.minMax.min)};
 }
 
 function update(deltaTime){

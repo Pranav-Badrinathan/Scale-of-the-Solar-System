@@ -2,6 +2,9 @@ import Two from "../libs/two.module.js";
 
 export var zui;
 export var pause;
+
+export var minMax = {min: 0.01, max: 50};
+
 /**
  * Credits to Jono Brandel. I just copied this function off them.
  * https://codepen.io/jonobr1/pen/PobMKwb
@@ -20,7 +23,7 @@ export function addZUI() {
 	var touches = {};
 	var distance = 0;
 
-	zui.addLimits(0.01, 25);
+	zui.addLimits(minMax.min, minMax.max);
 
 	domElement.addEventListener('mousedown', mousedown, false);
 	domElement.addEventListener('mousewheel', mousewheel, false);
@@ -42,6 +45,7 @@ export function addZUI() {
 	function mousemove(e) {
 		var dx = e.clientX - mouse.x;
 		var dy = e.clientY - mouse.y;
+		console.log(`${dx} : ${dy}`)
 		zui.translateSurface(dx, dy);
 		mouse.set(e.clientX, e.clientY);
 	}

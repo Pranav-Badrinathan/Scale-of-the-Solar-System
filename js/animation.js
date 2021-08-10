@@ -106,13 +106,13 @@ function executeAnimAtIndex(i){
 		var prvZoom = getZoomFromPercent(prvAnim.zoom);
 		var curZoom = getZoomFromPercent(curAnim.zoom);
 		var prvPos = {
-						x: pageMid.x + prvAnim.pos.x,
-						y: pageMid.y + prvAnim.pos.y
+						x: pageMid.x + prvAnim.pos.x * two.width,
+						y: pageMid.y + prvAnim.pos.y * two.height
 					};
 		
 		var curPos = {
-						x: pageMid.x + curAnim.pos.x,
-						y: pageMid.y + curAnim.pos.y
+						x: pageMid.x + curAnim.pos.x * two.width,
+						y: pageMid.y + curAnim.pos.y * two.height
 					};
 
 		tweens.push(new TWEEN.Tween(prvPos)

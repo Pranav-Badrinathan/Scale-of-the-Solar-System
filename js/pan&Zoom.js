@@ -14,6 +14,9 @@ export var minMax = {min: 0.01, max: 50};
  * @param {Two} two the `Two` object to add panning and zooming to.
  */
 export function addZUI() {
+	minMax.max = two.width/27.32;
+	minMax.min = two.width/136600;
+
 	var domElement = two.renderer.domElement;
 
 	zui = new Two.ZUI(two.scene);
@@ -45,7 +48,6 @@ export function addZUI() {
 	function mousemove(e) {
 		var dx = e.clientX - mouse.x;
 		var dy = e.clientY - mouse.y;
-		console.log(`${dx} : ${dy}`)
 		zui.translateSurface(dx, dy);
 		mouse.set(e.clientX, e.clientY);
 	}

@@ -8,12 +8,17 @@ anims.json value key:
 import * as panZoom from "./pan&Zoom.js";
 import TWEEN, { Tween } from "../libs/tween.esm.js";
 
-var pageMid;
+export var pageMid = {x: $(window).width() / 2, y: $(window).height() / 2};
+
 var prvAnim;
+var posZoom = { pos:{x:pageMid.x, y:pageMid.y}, zoom:1};
+
 var anims;
 var index;
 
 var tweens = [];
+
+var animFrameID;
 
 /**
  * Toggles the state of the animation. Turns it `on` if it is `off`, and vice verse.
@@ -28,13 +33,8 @@ export function toggleAnim(){
 		});
 		return;
 	}
-	
-	// To reset zoom value of zui on click. Will probably have to change, but whatever lol
-	panZoom.zui.reset();
-	panZoom.zui.updateSurface();
 
 	prep();
-	update();
 }
 
 /**
@@ -46,10 +46,12 @@ function toggleClicks(){
 	if(panZoom.pause === true) {
 		$("#clickable").on("click", Next);
 		$("#clickable").on("contextmenu", Previous);
+		requestAnimationFrame(update);
 	}
 	else {
 		$("#clickable").off("click", Next);
 		$("#clickable").off("contextmenu", Previous);
+		cancelAnimationFrame(animFrameID);
 	}
 }
 
@@ -60,13 +62,13 @@ function toggleClicks(){
  * 	-	Get the page middle.
  */
 function prep(){
+	posZoom = { pos: {x: pageMid.x, y: pageMid.y}, zoom: 1 };
+	
 	index = 0;
 	$.when(getAnimsFromJSON()).done((data) => {
 		anims = data;
 		executeAnimAtIndex(index);
 	});
-
-	pageMid = {x: $(window).width() / 2, y: $(window).height() / 2}
 }
 
 /**
@@ -75,6 +77,7 @@ function prep(){
  * An event callback that is triggered upon `Left Click`
  */
 function Next(){
+	mainSet.scale = 1
 	index = index + 1;
 	executeAnimAtIndex(index);
 }
@@ -85,7 +88,9 @@ function Next(){
  * An event callback that is triggered upon `Right Click`
  */
 function Previous(){
-	index = index - 1;
+	mainSet.scale = 0
+	index = Math.max(index - 1, 0);
+	executeAnimAtIndex(index);
 }
 
 /**
@@ -95,52 +100,48 @@ function Previous(){
 function executeAnimAtIndex(i){
 	var curAnim = anims.anim[i];
 
-	if(curAnim.isFirst){
-		panZoom.zui.surfaceMatrix.identity();
-		panZoom.zui.updateSurface();
-		panZoom.zui.zoomSet(Math.exp((getZoomFromPercent(curAnim.zoom).zoom)), pageMid.x, pageMid.y);
-	}
-	else{
+	if(!curAnim.isFirst){
 		prvAnim = prvAnim == null?anims.anim[i-1]:prvAnim;
 		
 		var prvZoom = getZoomFromPercent(prvAnim.zoom);
 		var curZoom = getZoomFromPercent(curAnim.zoom);
-		var prvPos = {
-						x: pageMid.x + prvAnim.pos.x * two.width,
-						y: pageMid.y + prvAnim.pos.y * two.height
-					};
+		var prvPos = getRelPos(prvAnim.pos);
 		
-		var curPos = {
-						x: pageMid.x + curAnim.pos.x * two.width,
-						y: pageMid.y + curAnim.pos.y * two.height
-					};
+		var curPos = getRelPos(curAnim.pos);
 
 		tweens.push(new TWEEN.Tween(prvPos)
 					.to(curPos, curAnim.duration)
 					.easing(TWEEN.Easing.Quadratic.InOut)
-					.start());
+					.onUpdate(()=>{
+						posZoom.pos = prvPos;
+					}).start());
 
 		tweens.push(new TWEEN.Tween(prvZoom)
 					.to(curZoom, curAnim.duration)
 					.easing(TWEEN.Easing.Quadratic.InOut)
 					.onUpdate(()=>{
-						console.log(prvPos.x-pageMid.x);
-						panZoom.zui.zoomSet(prvZoom.zoom, prvPos.x, prvPos.y);
+						posZoom.zoom += prvZoom.zoom;
 					}).start());
 	}
 
 	prvAnim = curAnim;
+
+	function getRelPos(pos) { 
+		return { x: pageMid.x + pos.x * two.width, y: pageMid.y + pos.y * two.height }; 
+	}
 }
 
 function getZoomFromPercent(percent) {
 	return {zoom: (percent * (panZoom.minMax.max - panZoom.minMax.min) / 100 + panZoom.minMax.min)};
 }
 
-function update(deltaTime){
-	requestAnimationFrame(update);
-	TWEEN.update(deltaTime);
-}
+function update(time){
+	animFrameID = requestAnimationFrame(update);
+	TWEEN.update(time);
 
+	mainSet.translation.set(posZoom.pos.x, posZoom.pos.y);
+	mainSet.scale = posZoom.zoom;
+}
 
 function getAnimsFromJSON(){
 	var JSONdata = $.Deferred();

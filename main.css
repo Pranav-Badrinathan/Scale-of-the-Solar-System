@@ -46,3 +46,7 @@ body{
 	border-width:0em 0em 0em 1.5em;
 	border-color: transparent transparent transparent rgb(32, 181, 226);
 }
+
+.change{
+	margin-left: 4em;
+}

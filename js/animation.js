@@ -64,6 +64,9 @@ function toggleClicks(){
 function prep(){
 	posZoom = { pos: {x: pageMid.x, y: pageMid.y}, zoom: 1 };
 	
+	panZoom.zui.reset();
+	panZoom.zui.updateSurface();
+
 	index = 0;
 	$.when(getAnimsFromJSON()).done((data) => {
 		anims = data;
@@ -77,7 +80,6 @@ function prep(){
  * An event callback that is triggered upon `Left Click`
  */
 function Next(){
-	mainSet.scale = 1
 	index = Math.min(index + 1, anims.anim.length - 1);
 	executeAnimAtIndex(index);
 }
@@ -88,7 +90,6 @@ function Next(){
  * An event callback that is triggered upon `Right Click`
  */
 function Previous(){
-	mainSet.scale = 0
 	index = Math.max(index - 1, 0);
 	executeAnimAtIndex(index);
 }
@@ -99,14 +100,13 @@ function Previous(){
  */
 function executeAnimAtIndex(i){
 	var curAnim = anims.anim[i];
-
+	
 	if(!curAnim.isFirst){
 		prvAnim = prvAnim == null?anims.anim[i-1]:prvAnim;
 		
 		var prvZoom = getZoomFromPercent(prvAnim.zoom);
 		var curZoom = getZoomFromPercent(curAnim.zoom);
 		var prvPos = getRelPos(prvAnim.pos);
-		
 		var curPos = getRelPos(curAnim.pos);
  
 		tweens.push(new TWEEN.Tween(prvPos)

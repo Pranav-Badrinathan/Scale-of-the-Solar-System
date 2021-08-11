@@ -3,9 +3,9 @@ import { toggleAnim } from "./animation.js";
 import { addZUI } from "./pan&Zoom.js";
 
 var sizeFactor = 1000;
-var centre;
 $(function(){
 	initTwo();
+
 	makeSun();
 	makeOrbits();
 	addZUI();
@@ -34,7 +34,7 @@ function makeSun(){
 
 function makeOrbits(){
 	//Distance from Sun to all planets + pluto in AU
-	var distInAU = [0.39, 0.723, 1, 1.524, 5.203, 9.539, 19.18, 30.06, 39.53];
+	var distInAU = [0.39, 0.723, 1, 1.524, 5.203, 9.539, 19.18, 30.06];
 
 	distInAU.forEach(e => {
 		var orbit = two.makeCircle(0, 0, 5 + (e * sizeFactor))

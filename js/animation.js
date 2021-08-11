@@ -78,7 +78,7 @@ function prep(){
  */
 function Next(){
 	mainSet.scale = 1
-	index = index + 1;
+	index = Math.min(index + 1, anims.anim.length - 1);
 	executeAnimAtIndex(index);
 }
 
@@ -108,19 +108,22 @@ function executeAnimAtIndex(i){
 		var prvPos = getRelPos(prvAnim.pos);
 		
 		var curPos = getRelPos(curAnim.pos);
-
+ 
 		tweens.push(new TWEEN.Tween(prvPos)
 					.to(curPos, curAnim.duration)
 					.easing(TWEEN.Easing.Quadratic.InOut)
 					.onUpdate(()=>{
 						posZoom.pos = prvPos;
+						mainSet.translation.set(posZoom.pos.x, posZoom.pos.y);
 					}).start());
 
 		tweens.push(new TWEEN.Tween(prvZoom)
 					.to(curZoom, curAnim.duration)
 					.easing(TWEEN.Easing.Quadratic.InOut)
 					.onUpdate(()=>{
-						posZoom.zoom += prvZoom.zoom;
+						mainSet.scale = prvZoom.zoom;
+
+						console.log(prvZoom.zoom);
 					}).start());
 	}
 
@@ -138,9 +141,6 @@ function getZoomFromPercent(percent) {
 function update(time){
 	animFrameID = requestAnimationFrame(update);
 	TWEEN.update(time);
-
-	mainSet.translation.set(posZoom.pos.x, posZoom.pos.y);
-	mainSet.scale = posZoom.zoom;
 }
 
 function getAnimsFromJSON(){
